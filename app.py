@@ -9,7 +9,7 @@ class AIItem(BaseModel):
     label: str
     timestamp: str
 
-class AIData(BaseModel):
+class PredictionRequest(BaseModel):
     ai_items: List[AIItem]
 
 @app.get("/")
@@ -17,13 +17,9 @@ def read_root():
     return {"message": "Failure Prediction API is running. Use /predict (POST) to get predictions."}
 
 @app.post("/predict")
-async def predict(data: AIData):
-    predictions = []
-    for item in data.ai_items:
-        predictions.append({
-            "label": item.label,
-            "timestamp": item.timestamp,
-            "predicted_failure": "yes" if item.label != "normal" else "no"
-        })
-
-    return {"predictions": predictions}
+def predict_failure(data: PredictionRequest):
+    result = {
+        "total_items": len(data.ai_items),
+        "labels": [item.label for item in data.ai_items]
+    }
+    return result
